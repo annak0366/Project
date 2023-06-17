@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Post Details</title>
+</head>
+<body>
+<div id="post-details"></div>
+<div id="post-comments"></div>
+
+<script>
+    // Отримуємо значення параметра postId з URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const postId = urlParams.get('postId');
+
+    // Отримуємо детальну інформацію про пост з endpoint'а
+    fetch(`https://jsonplaceholder.typicode.com/posts/${postId}`)
+        .then(response => response.json())
+        .then(post => {
+            // Виводимо детальну інформацію про пост
+            const postDetailsDiv = document.getElementById('post-details');
+            postDetailsDiv.innerHTML = `ID: ${post.id}, Title: ${post.title}, Body: ${post.body}`;
+
+            // Отримуємо коментарі поточного поста
+            fetch(`https://jsonplaceholder.typicode.com/posts/${post.id}/comments`)
+                .then(response => response.json())
+                .then(comments => {
+                    // Виводимо коментарі
+                    const postCommentsDiv = document.getElementById('post-comments');
+                    postCommentsDiv.innerHTML = '';
+
+                    comments.forEach(comment => {
+                        const commentDiv = document.createElement('div');
+                        commentDiv.innerHTML = `Name: ${comment.name}, Email: ${comment.email}, Comment: ${comment.body}`;
+
+                        postCommentsDiv.appendChild(commentDiv);
+                    });
+                })
+                .catch(error => console.error('Помилка:', error));
+        })
+        .catch(error => console.error('Помилка:', error));
+</script>
+</body>
+</html>

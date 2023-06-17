@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Users</title>
+  <style>
+    div {
+      margin-bottom: 20px;
+      border: 1px solid black;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+<div id="users"></div>
+
+<script>
+  fetch('https://jsonplaceholder.typicode.com/users')
+          .then(response => response.json())
+          .then(users => {
+            // Виводимо id та name кожного user у окремому блоку
+            const usersDiv = document.getElementById('users');
+
+            users.forEach(user => {
+              const userDiv = document.createElement('div');
+              userDiv.innerHTML = `<p>ID: ${user.id}</p>
+                                   <p>Name: ${user.name}</p>`;
+
+              // Додаємо кнопку
+              const button = document.createElement('button');
+              button.innerText = 'Details';
+              button.addEventListener('click', () => {
+                // Переходимо на сторінку user-details.html з параметром userId
+                window.location.href = `user-details.html?userId=${user.id}`;
+              });
+
+              userDiv.appendChild(button);
+              usersDiv.appendChild(userDiv);
+            });
+          })
+          .catch(error => console.error('Помилка:', error));
+</script>
+</body>
+</html>

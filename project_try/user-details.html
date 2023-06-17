@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Details</title>
+    <style>
+        #user-details {
+            width: 90%;
+        }
+
+        #user-details p {
+            margin-bottom: 10px;
+        }
+
+        #user-details button {
+            display: block;
+            width: 90%;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+        #user-posts {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+
+        .post-block {
+            width: 20%;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid black;
+            box-sizing: border-box;
+        }
+
+
+    </style>
+</head>
+<body>
+<div id="user-details"></div>
+<div id="user-posts"></div>
+
+<script>
+    // Отримуємо значення параметра userId з URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('userId');
+
+    // Отримуємо детальну інформацію про користувача з endpoint'а
+    fetch(`https://jsonplaceholder.typicode.com/users/${userId}`)
+        .then(response => response.json())
+        .then(user => {
+            // Виводимо детальну інформацію про користувача
+            const userDetailsDiv = document.getElementById('user-details');
+            userDetailsDiv.innerHTML = `ID: ${user.id}, Name: ${user.name}, Email: ${user.email}, Phone: ${user.phone}`;
+
+            // Додаємо кнопку для відображення заголовків постів поточного користувача
+            const button = document.createElement('button');
+            button.innerText = 'Posts of user';
+            button.addEventListener('click', () => {
+                // Отримуємо пости поточного користувача
+                fetch(`https://jsonplaceholder.typicode.com/users/${user.id}/posts`)
+                    .then(response => response.json())
+                    .then(posts => {
+                        // Виводимо заголовки постів
+                        const userPostsDiv = document.getElementById('user-posts');
+                        userPostsDiv.innerHTML = '';
+
+                        posts.forEach(post => {
+                            // Створюємо кнопку для переходу до сторінки post-details.html
+                            const postButton = document.createElement('button');
+                            postButton.innerText = post.title;
+                            postButton.addEventListener('click', () => {
+                                // Перехід до сторінки post-details.html з передачею параметру postId
+                                window.location.href = `post-details.html?postId=${post.id}`;
+                            });
+
+                            // Додаємо кнопку до контейнера постів
+                            userPostsDiv.appendChild(postButton);
+                        });
+                    })
+                    .catch(error => console.error('Помилка:', error));
+            });
+
+            userDetailsDiv.appendChild(button);
+        })
+        .catch(error => console.error('Помилка:', error));
+</script>
+</body>
+</html>
+
